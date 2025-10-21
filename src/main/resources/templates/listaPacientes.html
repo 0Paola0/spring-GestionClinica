@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pacientes</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .encabezado-principal {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-header {
+           width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    }
+
+    .logo-header img {
+           width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    }
+
+    .encabezado-principal h1 {
+        color: white;
+        font-size: 36px;
+        font-weight: 700;
+    }
+
+    .contenedor-principal {
+        padding: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .tarjeta {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+    }
+
+    .encabezado-tarjeta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .titulo-seccion {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .titulo-seccion svg {
+        width: 28px;
+        height: 28px;
+        fill: #2563eb;
+    }
+
+    .controles-derecha {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .buscador {
+        position: relative;
+    }
+
+    .buscador input {
+        width: 350px;
+        padding: 12px 45px 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        transition: all 0.3s;
+    }
+
+    .buscador input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .buscador input::placeholder {
+        color: #9ca3af;
+    }
+
+    .icono-buscar {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        fill: #6b7280;
+        cursor: pointer;
+    }
+
+    .boton-nuevo {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+    .boton-nuevo:hover {
+        background: #1e40af;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .tabla-contenedor {
+        overflow-x: auto;
+    }
+
+    .tabla {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .tabla thead {
+        background: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tabla th {
+        padding: 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .tabla tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: all 0.2s;
+    }
+
+    .tabla tbody tr:hover {
+        background: #f9fafb;
+    }
+
+    .tabla td {
+        padding: 18px 16px;
+        color: #374151;
+        font-size: 15px;
+    }
+
+    .acciones {
+        display: flex;
+        gap: 8px;
+    }
+
+    .boton-accion {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .boton-accion svg {
+        width: 14px;
+        height: 14px;
+        fill: white;
+    }
+
+    .boton-ver {
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+    }
+
+    .boton-ver:hover {
+        background: #1e40af;
+        transform: translateY(-1px);
+    }
+
+    .boton-editar {
+        background: #f59e0b;
+        color: white;
+        text-decoration: none;
+
+    }
+
+    .boton-editar:hover {
+        background: #d97706;
+        transform: translateY(-1px);
+    }
+
+    .boton-eliminar {
+        background: #ef4444;
+        color: white;
+    }
+
+    .boton-eliminar:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+    }
+
+    .paginacion {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .info-pagina {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .controles-pagina {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .boton-pagina {
+        padding: 8px 14px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        color: #374151;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .boton-pagina:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+    }
+
+    .boton-pagina.activo {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+
+    .boton-pagina:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+<header class="encabezado-principal">
+  <div class="logo-header">
+    <img src="/img/logo.png" alt="Logo">
+  </div>
+  <h1>Pacientes</h1>
+</header>
+
+<main class="contenedor-principal">
+  <div class="tarjeta">
+    <div class="encabezado-tarjeta">
+      <h2 class="titulo-seccion">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+        </svg>
+        Lista de Pacientes
+      </h2>
+
+      <div class="controles-derecha">
+        <div class="buscador">
+          <input type="text" id="buscador" placeholder="Buscar pacientes...">
+          <svg class="icono-buscar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+        </div>
+        <form action="/fichaPacientes" method="get">
+          <button type="submit" class="boton-nuevo">Nuevo Paciente</button>
+        </form>
+      </div>
+    </div>
+    <div th:if="${mensaje}" class="alerta-exito">
+      <p th:text="${mensaje}"></p>
+    </div>
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+        <tr>
+          <th>CÓDIGO</th>
+          <th>NOMBRES</th>
+          <th>APELLIDOS</th>
+          <th>EDAD</th>
+          <th>TELÉFONO</th>
+          <th>ACCIONES</th>
+        </tr>
+        </thead>
+        <tbody id="tabla-pacientes">
+          <tr th:each="paciente : ${pacientes}">
+          <td th:text="${paciente.codigo}">Código</td>
+          <td th:text="${paciente.nombres}">Nombres</td>
+          <td th:text="${paciente.apellidos}">Apellidos</td>
+          <td th:text="${paciente.edad + ' años'}">Edad</td>
+          <td th:text="${paciente.telefono}">Teléfono</td>
+          <td>
+            <div class="acciones">
+              <a th:href="@{'/pacientes/ver/' + ${paciente.id}}" class="boton-accion boton-ver">                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+                Ver
+              </a>
+              <a th:href="@{'/pacientes/editar/' + ${paciente.id}}" class="boton-accion boton-editar">                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+                Editar
+              </a>
+              <form th:action="@{'/pacientes/eliminar/' + ${paciente.id}}" method="post" style="display:inline;">
+                <button type="submit" class="boton-accion boton-eliminar" onclick="return confirm('¿Eliminar este paciente?')">                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+                Eliminar
+              </button>
+                </form>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="paginacion">
+      <div class="info-pagina">Página 1 de 1</div>
+      <div class="controles-pagina">
+        <button class="boton-pagina" disabled>Anterior</button>
+        <button class="boton-pagina activo">1</button>
+        <button class="boton-pagina" disabled>Siguiente</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+  document.getElementById('buscador').addEventListener('input', function () {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#tabla-pacientes tr');
+
+    filas.forEach(fila => {
+      const textoFila = fila.textContent.toLowerCase();
+      fila.style.display = textoFila.includes(filtro) ? '' : 'none';
+    });
+  });
+</script>
+</body>
+</html>

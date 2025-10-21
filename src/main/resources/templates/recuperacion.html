@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Clínica - Recuperar Contraseña</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #CED4DA;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+    }
+
+    .contenedor {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 560px;
+        width: 100%;
+        overflow: visible;
+        position: relative;
+    }
+
+    .icono-pregunta {
+        position: absolute;
+        top: -20px;
+        right: -80px;
+        width: 120px;
+        height: auto;
+    }
+
+    .encabezado {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        padding: 60px 40px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+    .logo {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .encabezado h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 40px;
+    }
+
+    .icono-llave {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .icono-llave img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .encabezado h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .encabezado p {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .contenido {
+        padding: 40px;
+    }
+
+    .descripcion {
+        text-align: center;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .grupo-formulario {
+        margin-bottom: 24px;
+    }
+
+    .grupo-formulario label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .contenedor-input {
+        position: relative;
+    }
+
+    .contenedor-input svg {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        fill: #9ca3af;
+    }
+
+    .grupo-formulario input {
+        width: 100%;
+        padding: 14px 16px 14px 48px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s;
+        outline: none;
+    }
+
+    .grupo-formulario input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .grupo-formulario input::placeholder {
+        color: #9ca3af;
+    }
+
+    .boton-enviar {
+        width: 100%;
+        padding: 14px 24px;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .boton-enviar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    .boton-enviar svg {
+        width: 18px;
+        height: 18px;
+        fill: white;
+    }
+
+    .caja-informacion {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+    }
+
+    .caja-informacion svg {
+        width: 20px;
+        height: 20px;
+        fill: #2563eb;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .contenido-informacion {
+        flex: 1;
+    }
+
+    .titulo-informacion {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 4px;
+    }
+
+    .texto-informacion {
+        font-size: 13px;
+        color: #1e40af;
+        line-height: 1.5;
+    }
+
+    .enlace-volver {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 24px;
+        padding: 12px;
+        transition: all 0.3s;
+    }
+
+    .enlace-volver:hover {
+        color: #1e40af;
+    }
+
+    .enlace-volver svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+    }
+
+    .enlace-soporte {
+        text-align: center;
+        margin-top: 24px;
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .enlace-soporte a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .enlace-soporte a:hover {
+        text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="contenedor">
+  <img src="/img/llave.png" alt="Icono de pregunta" class="icono-pregunta">
+  <div class="encabezado">
+    <div class="logo">
+      <img src="/img/logo.png" alt="Logo Gestión Clínica">
+    </div>
+    <h1>Gestión Clínica</h1>
+    <div class="icono-llave">
+      <img src="/img/llave-de-casa.png" alt="Icono de llave">
+    </div>
+    <h2>¿Olvidaste tu contraseña?</h2>
+    <p>No te preocupes, te ayudaremos a recuperarla</p>
+  </div>
+
+  <div class="contenido">
+    <p class="descripcion">
+      Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+    </p>
+
+    <form>
+      <div class="grupo-formulario">
+        <label for="correo">Correo electrónico</label>
+        <div class="contenedor-input">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+          <input type="email" id="correo" name="correo" placeholder="doctor@gmail.com" required>
+        </div>
+      </div>
+
+      <button type="submit" class="boton-enviar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+        Enviar enlace de recuperación
+      </button>
+    </form>
+
+    <div class="caja-informacion">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+      <div class="contenido-informacion">
+        <div class="titulo-informacion">Información importante:</div>
+        <div class="texto-informacion">El enlace de recuperación expirará en 24 horas por seguridad.</div>
+      </div>
+    </div>
+
+    <a href="/login" class="enlace-volver">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      Volver al inicio de sesión
+    </a>
+
+    <div class="enlace-soporte">
+      ¿Necesitas ayuda? <a href="#">Contacta soporte</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

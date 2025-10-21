@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #f0f2f5;
+        min-height: 100vh;
+    }
+
+    .encabezado-principal {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: visible;
+    }
+
+    .logo-header {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    }
+
+    .logo-header img {
+          width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    }
+
+    .encabezado-principal h1 {
+        color: white;
+        font-size: 36px;
+        font-weight: 700;
+    }
+
+    .contenedor-imagen-paciente {
+        position: absolute;
+        top: 10px;
+        right: 80px;
+        width: 200px;
+        height: 200px;
+        z-index: 10;
+        cursor: pointer;
+    }
+
+    .fondo-imagen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .label-imagen-paciente {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140px;
+        height: 140px;
+        cursor: pointer;
+        z-index: 11;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .imagen-paciente {
+        width: 70%;
+        height: 70%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .icono-camara {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 35px;
+        height: 35px;
+        background: #2563eb;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s;
+    }
+
+    .label-imagen-paciente:hover .icono-camara {
+        background: #1e40af;
+        transform: scale(1.1);
+    }
+
+    .icono-camara img {
+        width: 18px;
+        height: 18px;
+    }
+
+    #input-foto-paciente {
+        display: none;
+    }
+
+    .contenedor-principal {
+        padding: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .contenedor-formulario {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    .tarjeta {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+    }
+
+    .titulo-seccion {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .titulo-seccion svg {
+        width: 24px;
+        height: 24px;
+        fill: #2563eb;
+    }
+
+    .grupo-campo {
+        margin-bottom: 20px;
+    }
+
+    .grupo-campo label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .grupo-campo input[type="text"],
+    .grupo-campo input[type="number"],
+    .grupo-campo input[type="tel"],
+    .grupo-campo textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .grupo-campo input:focus,
+    .grupo-campo textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .grupo-campo textarea {
+        resize: vertical;
+        min-height: 45px;
+    }
+
+    .grupo-antecedente {
+        margin-bottom: 20px;
+    }
+
+    .pregunta-antecedente {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 10px;
+    }
+
+    .grupo-radio {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 10px;
+    }
+
+    .opcion-radio {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .opcion-radio input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #2563eb;
+    }
+
+    .opcion-radio label {
+        font-size: 14px;
+        color: #4b5563;
+        cursor: pointer;
+    }
+
+    .input-detalles {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #9ca3af;
+        transition: all 0.3s;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .input-detalles:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        color: #374151;
+    }
+
+    .contenedor-boton {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    .boton-guardar {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+    }
+
+    .boton-guardar:hover {
+        background: #1e40af;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .boton-guardar svg {
+        width: 18px;
+        height: 18px;
+        fill: white;
+    }
+
+    @media (max-width: 1024px) {
+        .contenedor-formulario {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+</head>
+<body>
+<form th:action="${paciente.id != null} ? @{/pacientes/actualizar} : @{/guardarPaciente}" method="post" enctype="multipart/form-data">
+  <th:block th:if="${modoEdicion and paciente.id != null}">
+    <input type="hidden" name="id" th:value="${paciente.id}">
+  </th:block>
+  <header class="encabezado-principal">
+    <div class="logo-header">
+      <img src="/img/logo.png" alt="Logo">
+    </div>
+    <h1>Ficha</h1>
+    <div class="contenedor-imagen-paciente">
+      <img src="/img/fondoFicha.png" alt="Fondo" class="fondo-imagen">
+      <label for="input-foto-paciente" class="label-imagen-paciente">
+        <img th:src="${fotoBase64 != null} ? 'data:image/jpeg;base64,' + ${fotoBase64} : '/img/pacienteicono.png'"
+             alt="Foto del paciente" class="imagen-paciente" id="preview-imagen">
+        <div class="icono-camara">
+          <img src="/img/camara-fotografica.png" alt="Subir imagen">
+        </div>
+      </label>
+      <input type="file" id="input-foto-paciente" name="foto" accept="image/*" th:attr="required=${!modoEdicion}">
+    </div>
+  </header>
+
+  <main class="contenedor-principal">
+    <div class="contenedor-formulario">
+      <!-- Datos del paciente -->
+      <div class="tarjeta">
+        <h2 class="titulo-seccion">Datos del paciente</h2>
+
+        <div class="grupo-campo">
+          <label for="codigo">Código:</label>
+          <input type="text" id="codigo" name="codigo" th:value="${paciente.codigo}" readonly>
+        </div>
+        <div class="grupo-campo">
+          <label for="nombres">Nombres:</label>
+          <input type="text" id="nombres" name="nombres" th:value="${paciente.nombres}" required>
+        </div>
+        <div class="grupo-campo">
+          <label for="apellidos">Apellidos:</label>
+          <input type="text" id="apellidos" name="apellidos" th:value="${paciente.apellidos}" required>
+        </div>
+        <div class="grupo-campo">
+          <label for="edad">Edad:</label>
+          <input type="number" id="edad" name="edad" th:value="${paciente.edad}" required>
+        </div>
+        <div class="grupo-campo">
+          <label for="telefono">Teléfono:</label>
+          <input type="tel" id="telefono" name="telefono" th:value="${paciente.telefono}" required>
+        </div>
+      </div>
+
+      <!-- Historia clínica -->
+      <div class="tarjeta">
+        <h2 class="titulo-seccion">Historia clínica</h2>
+
+        <div class="grupo-campo">
+          <label for="motivo">Motivo de consulta:</label>
+          <textarea id="motivo" name="motivoConsulta" rows="2" th:text="${paciente.motivoConsulta}" required></textarea>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="enfermedad">Enfermedad actual:</label>
+          <textarea id="enfermedad" name="enfermedadActual" rows="2" th:text="${paciente.enfermedadActual}" required></textarea>
+        </div>
+
+        <div style="margin-top: 25px;">
+          <label>Antecedentes:</label>
+
+          <!-- Diabetes -->
+          <div class="grupo-antecedente">
+            <div class="pregunta-antecedente">¿Diabetes?</div>
+            <div class="grupo-radio">
+              <div class="opcion-radio">
+                <input type="radio" id="diabetes-si" name="diabetes" value="true" th:checked="${paciente.diabetes} == true" required>
+                <label for="diabetes-si">Sí</label>
+              </div>
+              <div class="opcion-radio">
+                <input type="radio" id="diabetes-no" name="diabetes" value="false" th:checked="${paciente.diabetes} == false">
+                <label for="diabetes-no">No</label>
+              </div>
+            </div>
+            <input type="text" name="detalleDiabetes" class="input-detalles" placeholder="Detalles" th:value="${paciente.detalleDiabetes}" required>
+          </div>
+
+          <!-- Hipertensión -->
+          <div class="grupo-antecedente">
+            <div class="pregunta-antecedente">¿Hipertensión?</div>
+            <div class="grupo-radio">
+              <div class="opcion-radio">
+                <input type="radio" id="hipertension-si" name="hipertension" value="true" th:checked="${paciente.hipertension} == true" required>
+                <label for="hipertension-si">Sí</label>
+              </div>
+              <div class="opcion-radio">
+                <input type="radio" id="hipertension-no" name="hipertension" value="false" th:checked="${paciente.hipertension} == false">
+                <label for="hipertension-no">No</label>
+              </div>
+            </div>
+            <input type="text" name="detalleHipertension" class="input-detalles" placeholder="Detalles" th:value="${paciente.detalleHipertension}" required>
+          </div>
+
+          <!-- Alergias -->
+          <div class="grupo-antecedente">
+            <div class="pregunta-antecedente">¿Alergias?</div>
+            <div class="grupo-radio">
+              <div class="opcion-radio">
+                <input type="radio" id="alergias-si" name="alergias" value="true" th:checked="${paciente.alergias} == true" required>
+                <label for="alergias-si">Sí</label>
+              </div>
+              <div class="opcion-radio">
+                <input type="radio" id="alergias-no" name="alergias" value="false" th:checked="${paciente.alergias} == false">
+                <label for="alergias-no">No</label>
+              </div>
+            </div>
+            <input type="text" name="detalleAlergias" class="input-detalles" placeholder="Detalles" th:value="${paciente.detalleAlergias}" required>
+          </div>
+
+          <!-- Cirugías previas -->
+          <div class="grupo-antecedente">
+            <div class="pregunta-antecedente">¿Cirugías previas?</div>
+            <div class="grupo-radio">
+              <div class="opcion-radio">
+                <input type="radio" id="cirugias-si" name="cirugias" value="true" th:checked="${paciente.cirugiasPrevias} == true" required>
+                <label for="cirugias-si">Sí</label>
+              </div>
+              <div class="opcion-radio">
+                <input type="radio" id="cirugias-no" name="cirugias" value="false" th:checked="${paciente.cirugiasPrevias} == false">
+                <label for="cirugias-no">No</label>
+              </div>
+            </div>
+            <input type="text" name="detalleCirugias" class="input-detalles" placeholder="Detalles" th:value="${paciente.detalleCirugias}" required>
+          </div>
+
+          <!-- Medicamentos actuales -->
+          <div class="grupo-antecedente">
+            <div class="pregunta-antecedente">¿Medicamentos actuales?</div>
+            <div class="grupo-radio">
+              <div class="opcion-radio">
+                <input type="radio" id="medicamentos-si" name="medicamentos" value="true" th:checked="${paciente.medicamentosActuales} == true" required>
+                <label for="medicamentos-si">Sí</label>
+              </div>
+              <div class="opcion-radio">
+                <input type="radio" id="medicamentos-no" name="medicamentos" value="false" th:checked="${paciente.medicamentosActuales} == false">
+                <label for="medicamentos-no">No</label>
+              </div>
+            </div>
+            <input type="text" name="detalleMedicamentos" class="input-detalles" placeholder="Detalles" th:value="${paciente.detalleMedicamentos}" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón Guardar -->
+      <div class="contenedor-boton" th:if="${modoEdicion}">
+        <button type="submit" class="boton-guardar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>          </svg>
+          Guardar
+        </button>
+      </div>
+    </div>
+  </main>
+</form>
+
+<script>
+  const inputFoto = document.getElementById('input-foto-paciente');
+  const imagenPaciente = document.getElementById('preview-imagen');
+
+  inputFoto.addEventListener('change', function () {
+    const archivo = this.files[0];
+    if (archivo) {
+      const lector = new FileReader();
+      lector.onload = function (e) {
+        imagenPaciente.src = e.target.result;
+      };
+      lector.readAsDataURL(archivo);
+    }
+  });
+</script>
+</body>
+</html>

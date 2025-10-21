@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro</title>
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+        body {
+          margin: 0;
+          font-family: 'Inter', sans-serif;
+          background-color: #f9fafb;
+          color: #374151;
+        }
+        header {
+          background-color: #293CCF;
+          color: white;
+          padding: 1px 32px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        header img {
+          height: 70px;
+          width: 70px;
+        }
+        .contenedor {
+          display: flex;
+          min-height: 100vh;
+        }
+        .barra-lateral {
+          width: 240px;
+          background-color: #FFFFFF;
+          border-right: 1px solid #E5E7EB;
+          padding: 24px;
+        }
+        .barra-lateral ul {
+          list-style: none;
+          padding: 0;
+        }
+        .barra-lateral li {
+          margin-bottom: 30px;
+          font-size: 15px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #374151;
+        }
+        .contenido-principal {
+          flex: 1;
+          padding: 40px;
+        }
+        .contenido-principal h1 {
+          font-size: 24px;
+          margin-bottom: 8px;
+          color: #111827;
+        }
+        .contenido-principal p {
+          font-size: 14px;
+          color: #6B7280;
+          margin-bottom: 32px;
+        }
+        .seccion-formulario {
+          background-color: white;
+          border-radius: 10px;
+          padding: 24px;
+          margin-bottom: 32px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .seccion-formulario h2 {
+          font-size: 18px;
+          margin-bottom: 24px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #293CCF;
+        }
+        .icono-seccion {
+          font-size: 20px;
+        }
+        .contenedor-foto {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 24px;
+        }
+        .contenedor-imagen {
+          position: relative;
+          width: 100px;
+          height: 100px;
+        }
+        .imagen-perfil {
+          display: block;
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          background-color: #E5E7EB;
+          overflow: hidden;
+          position: relative;
+          cursor: pointer;
+        }
+        .imagen-perfil img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .icono-camara {
+          position: absolute;
+          bottom: 9px;
+          right: 11px;
+          background-color: #5b72f4;
+          border-radius: 50%;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .icono-camara img {
+          width: 14px;
+          height: 14px;
+        }
+        input[type="file"] {
+          display: none;
+        }
+        .grupo-campos {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 24px;
+        }
+        .grupo-campos label {
+          flex: 1 1 300px;
+          display: flex;
+          flex-direction: column;
+          font-size: 14px;
+        }
+        input, select {
+          padding: 10px;
+          margin-top: 6px;
+          border: 1px solid #D1D5DB;
+          border-radius: 6px;
+          font-size: 14px;
+        }
+        .botones-formulario {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          margin-top: 24px;
+        }
+        .boton-cancelar {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #ccc;
+          color: #333;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: bold;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        .boton-cancelar:hover {
+          background-color: #bbb;
+        }
+        .boton-guardar {
+          padding: 10px 20px;
+          font-size: 14px;
+          border-radius: 6px;
+          border: none;
+          cursor: pointer;
+          background-color: #293CCF;
+          color: white;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/registro}" method="post" enctype="multipart/form-data" th:object="${usuario}">
+    <header>
+        <img src="/img/logo.png" alt="Logo Gestión Clínica" />
+        <h1>Gestión Clínica</h1>
+    </header>
+
+    <div class="contenedor">
+        <aside class="barra-lateral">
+            <ul>
+                <li>👤 Datos Personales</li>
+                <li>✉️ Información de Contacto</li>
+                <li>🔐 Acceso al Sistema</li>
+            </ul>
+        </aside>
+
+        <main class="contenido-principal">
+            <h1>Crear Nuevo Usuario</h1>
+            <p>Complete la información para registrar un nuevo usuario en el sistema de Gestión Clínica.</p>
+            
+            <!-- Mostrar mensajes de error -->
+            <div th:if="${error}" style="background-color: #fef2f2; border: 2px solid #fca5a5; color: #dc2626; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-family: monospace; white-space: pre-line;">
+                <strong style="font-size: 16px;">🚨 ERRORES ENCONTRADOS:</strong><br><br>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- DATOS PERSONALES -->
+            <section class="seccion-formulario">
+                <h2><span class="icono-seccion">👤</span> Datos Personales</h2>
+
+                <div class="contenedor-foto">
+                    <div class="contenedor-imagen">
+                        <label for="foto" class="imagen-perfil">
+                            <img src="/img/usuarioRegistro.png" alt="Foto de perfil" />
+                            <div class="icono-camara">
+                                <img src="/img/camara-fotografica.png" alt="Subir imagen" />
+                            </div>
+                        </label>
+                        <input type="file" name="foto" id="foto" accept="image/*" />
+                    </div>
+                </div>
+
+                <div class="grupo-campos">
+                    <label>Nombres*<input type="text" th:field="*{nombres}" placeholder="Ingrese nombres completos" />
+                        <div th:if="${#fields.hasErrors('nombres')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{nombres}"></span>
+                        </div>
+                    </label>
+                    <label>Apellidos*<input type="text" th:field="*{apellidos}" placeholder="Ingrese apellidos completos" />
+                        <div th:if="${#fields.hasErrors('apellidos')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{apellidos}"></span>
+                        </div>
+                    </label>
+                    <label>Tipo de Documento*<select th:field="*{tipoDocumento}">
+                        <option value="">Seleccione tipo de documento</option>
+                        <option value="DUI">DUI</option>
+                        <option value="Pasaporte">Pasaporte</option>
+                    </select>
+                        <div th:if="${#fields.hasErrors('tipoDocumento')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{tipoDocumento}"></span>
+                        </div>
+                    </label>
+                    <label>Número de Documento*<input type="text" th:field="*{numeroDocumento}" placeholder="00000000-0" pattern="[0-9-]+" />
+                        <div th:if="${#fields.hasErrors('numeroDocumento')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{numeroDocumento}"></span>
+                        </div>
+                    </label>
+                    <label>Fecha de Nacimiento<input type="date" name="fechaNacimientoStr" th:value="${usuario.fechaNacimiento != null ? usuario.fechaNacimiento.format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd')) : ''}" />
+                        <div th:if="${#fields.hasErrors('fechaNacimiento')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{fechaNacimiento}"></span>
+                        </div>
+                    </label>
+                    <label>Género<select th:field="*{genero}">
+                        <option value="">Seleccione género</option>
+                        <option th:each="genero : ${T(sv.edu.udb.model.Usuario.Genero).values()}" 
+                                th:value="${genero}" 
+                                th:text="${genero}"></option>
+                    </select>
+                        <div th:if="${#fields.hasErrors('genero')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{genero}"></span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- INFORMACIÓN DE CONTACTO -->
+            <section class="seccion-formulario">
+                <h2><span class="icono-seccion">✉️</span> Información de Contacto</h2>
+                <div class="grupo-campos">
+                    <label>Correo Electrónico*<input type="email" th:field="*{correoElectronico}" placeholder="usuario@ejemplo.com" />
+                        <div th:if="${#fields.hasErrors('correoElectronico')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{correoElectronico}"></span>
+                        </div>
+                    </label>
+                    <label>Teléfono Celular*<input type="tel" th:field="*{telefonoCelular}" placeholder="0000-0000" pattern="[0-9-]+" />
+                        <div th:if="${#fields.hasErrors('telefonoCelular')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{telefonoCelular}"></span>
+                        </div>
+                    </label>
+                    <label>Teléfono Alternativo (Opcional)<input type="tel" th:field="*{telefonoAlternativo}" placeholder="0000-0000" pattern="[0-9-]+" />
+                        <div th:if="${#fields.hasErrors('telefonoAlternativo')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{telefonoAlternativo}"></span>
+                        </div>
+                    </label>
+                    <label>Dirección<input type="text" th:field="*{direccion}" placeholder="Colonia San Benito, San Salvador" />
+                        <div th:if="${#fields.hasErrors('direccion')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{direccion}"></span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- ACCESO AL SISTEMA -->
+            <section class="seccion-formulario">
+                <h2><span class="icono-seccion">🔐</span> Acceso al Sistema</h2>
+                <div class="grupo-campos">
+                    <label>Nombre de Usuario*<input type="text" th:field="*{nombreUsuario}" placeholder="Ej. ana.lopez" />
+                        <div th:if="${#fields.hasErrors('nombreUsuario')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{nombreUsuario}"></span>
+                        </div>
+                    </label>
+                    <label>Contraseña*<input type="password" th:field="*{contraseña}" placeholder="********" />
+                        <div th:if="${#fields.hasErrors('contraseña')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{contraseña}"></span>
+                        </div>
+                    </label>
+                    <label>Rol de Usuario*
+                        <select th:field="*{rol}">
+                            <option value="">Seleccione rol</option>
+                            <option th:each="rol : ${T(sv.edu.udb.model.Usuario.Rol).values()}" 
+                                    th:value="${rol}" 
+                                    th:text="${rol}"></option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('rol')}" style="color: red; font-size: 12px; margin-top: 4px;">
+                            <span th:errors="*{rol}"></span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <div class="botones-formulario">
+                <a href="/" class="boton-cancelar">Cancelar</a>
+                <button type="submit" class="boton-guardar">Guardar Usuario</button>
+            </div>
+        </main>
+    </div>
+</form>
+
+<script>
+    const inputFoto = document.getElementById('foto');
+    const imagenPerfil = document.querySelector('.imagen-perfil img');
+
+    inputFoto.addEventListener('change', function () {
+      const archivo = this.files[0];
+      if (archivo) {
+        const lector = new FileReader();
+        lector.onload = function (e) {
+          imagenPerfil.src = e.target.result;
+        };
+        lector.readAsDataURL(archivo);
+      }
+    });
+</script>
+</body>
+</html>
+

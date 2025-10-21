@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Clínica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Encabezado */
+        .encabezado {
+            background: linear-gradient(135deg, #4154f1 0%, #2c3edb 100%);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+            border-radius: 5px;
+
+        }
+
+        .encabezado-izquierda {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .titulo-encabezado {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .menu-navegacion {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin-left: 400px;
+        }
+
+        .menu-navegacion li {
+            position: relative;
+        }
+
+        .menu-navegacion li a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            transition: opacity 0.3s;
+            display: block;
+            padding: 5px 0;
+        }
+
+        .menu-navegacion li a:hover {
+            opacity: 0.8;
+        }
+
+        /* Menú desplegable */
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            min-width: 200px;
+            padding: 8px 0;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .submenu li {
+            list-style: none;
+        }
+
+        .submenu li a {
+            color: #333;
+            padding: 12px 20px;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .submenu li a:hover {
+            background: #f5f5f5;
+            opacity: 1;
+        }
+
+        .menu-navegacion li:hover .submenu {
+            display: block;
+        }
+
+        .encabezado-derecha {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .boton-icono {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .avatar-usuario {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Botón menú móvil */
+        .boton-menu-movil {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Contenedor Principal */
+        .contenedor {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        /* Grid Layout */
+        .cuadricula-dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Tarjetas */
+        .tarjeta {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Perfil del Doctor */
+        .perfil-doctor {
+            text-align: center;
+        }
+
+        .avatar-doctor {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border: 4px solid #4154f1;
+            border-radius: 20px;
+            background: #e8eaf6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nombre-doctor {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .especialidad-doctor {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .lista-estadisticas {
+            text-align: left;
+        }
+
+        .item-estadistica {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .etiqueta-estadistica {
+            color: #666;
+        }
+
+        .valor-estadistica {
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+
+        .valor-estadistica.azul { color: #4154f1; }
+        .valor-estadistica.naranja { color: #ff9800; }
+        .valor-estadistica.verde { color: #4caf50; }
+
+        /* Encabezado de Tarjeta */
+        .encabezado-tarjeta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .titulo-tarjeta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .icono-titulo-tarjeta {
+            font-size: 20px;
+        }
+
+        .enlace-tarjeta {
+            color: #4154f1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Citas */
+        .item-cita {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .hora-cita {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .hora-numero {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .periodo-hora {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .detalles-cita {
+            flex: 1;
+        }
+
+        .nombre-cita {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tipo-cita {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .estado-cita {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .estado-confirmada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .estado-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Trabajos de Laboratorio */
+        .item-laboratorio {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .titulo-laboratorio {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .detalles-laboratorio {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Notas Rápidas */
+        .entrada-notas {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .tarjeta-nota {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-top: 15px;
+        }
+
+        .titulo-nota {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .iconos-nota {
+            display: flex;
+            gap: 10px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .contenido-nota {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .tiempo-nota {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .boton-guardar {
+            background: #4154f1;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            float: right;
+        }
+
+        /* Tabla de Inventario */
+        .seccion-inventario {
+            grid-column: 1 / 3;
+        }
+
+        .tabla-inventario {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tabla-inventario th {
+            text-align: left;
+            padding: 12px;
+            color: #666;
+            font-weight: 500;
+            font-size: 13px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tabla-inventario td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .celda-producto {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icono-producto {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .insignia-estado {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .estado-critico {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .estado-bajo {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .boton-ordenar {
+            color: #4154f1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Actividad Reciente */
+        .seccion-actividad {
+            grid-column: 3;
+        }
+
+        .item-actividad {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .icono-actividad {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .icono-actividad.azul { background: #e3f2fd; color: #2196f3; }
+        .icono-actividad.verde { background: #e8f5e9; color: #4caf50; }
+        .icono-actividad.morado { background: #f3e5f5; color: #9c27b0; }
+
+        .detalles-actividad {
+            flex: 1;
+        }
+
+        .titulo-actividad {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .descripcion-actividad {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .tiempo-actividad {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Pie de página */
+        .pie-pagina {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+        }
+
+        .enlaces-pie {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .enlaces-pie a {
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .cuadricula-dashboard {
+                grid-template-columns: 280px 1fr;
+            }
+
+            .seccion-inventario {
+                grid-column: 1 / 3;
+            }
+
+            .seccion-actividad {
+                grid-column: 1 / 3;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .encabezado {
+                padding: 15px 20px;
+            }
+
+            .contenedor {
+                padding: 20px;
+            }
+
+            .cuadricula-dashboard {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .seccion-inventario {
+                grid-column: 1;
+            }
+
+            .seccion-actividad {
+                grid-column: 1;
+            }
+
+            .menu-navegacion {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #4154f1;
+                flex-direction: column;
+                gap: 0;
+                padding: 10px 0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+
+            .menu-navegacion.activo {
+                display: flex;
+            }
+
+            .menu-navegacion li {
+                width: 100%;
+            }
+
+            .menu-navegacion li a {
+                padding: 15px 20px;
+            }
+
+            .submenu {
+                position: static;
+                display: none;
+                box-shadow: none;
+                background: rgba(0,0,0,0.1);
+                margin-top: 0;
+            }
+
+            .menu-navegacion li:hover .submenu {
+                display: none;
+            }
+
+            .menu-navegacion li.activo .submenu {
+                display: block;
+            }
+
+            .boton-menu-movil {
+                display: block;
+            }
+
+            .tabla-inventario {
+                font-size: 13px;
+            }
+
+            .tabla-inventario th,
+            .tabla-inventario td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .encabezado-derecha {
+                gap: 10px;
+            }
+
+            .titulo-encabezado {
+                font-size: 16px;
+            }
+
+            .logo {
+                width: 30px;
+                height: 30px;
+            }
+
+            .tarjeta {
+                padding: 20px;
+            }
+
+            .avatar-doctor {
+                width: 100px;
+                height: 100px;
+            }
+
+            .tabla-inventario {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .tabla-inventario thead {
+                display: none;
+            }
+
+            .tabla-inventario tbody,
+            .tabla-inventario tr,
+            .tabla-inventario td {
+                display: block;
+            }
+
+            .tabla-inventario tr {
+                margin-bottom: 20px;
+                border: 1px solid #f0f0f0;
+                border-radius: 8px;
+                padding: 15px;
+                background: #fafafa;
+            }
+
+            .tabla-inventario td {
+                text-align: left;
+                padding: 8px 0;
+                border: none;
+                position: relative;
+                padding-left: 120px;
+            }
+
+            .tabla-inventario td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                font-weight: 600;
+                color: #666;
+            }
+
+            .tabla-inventario td:first-child {
+                padding-left: 0;
+            }
+
+            .tabla-inventario td:first-child:before {
+                display: none;
+            }
+
+            .pie-pagina {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .item-cita {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .hora-cita {
+                min-width: auto;
+                text-align: left;
+            }
+
+            .detalles-laboratorio {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .encabezado-tarjeta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .boton-guardar {
+                width: 100%;
+                float: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Encabezado -->
+<header class="encabezado">
+    <div class="encabezado-izquierda">
+        <div class="logo">
+            <img src="/img/logo.png" alt="Logo Clínica" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <h1 class="titulo-encabezado">Gestión Clínica</h1>
+    </div>
+    <button class="boton-menu-movil" onclick="toggleMenu()">☰</button>
+    <nav>
+        <ul class="menu-navegacion" id="menuNavegacion">
+            <li><a href="/pacientes">Ficha Paciente</a></li>
+            <li><a href="#">Agenda</a></li>
+            <li><a href="#">Laboratorio</a></li>
+            <li><a href="#">Almacén</a></li>
+            <li>
+                <a href="#" onclick="toggleSubmenu(event)">••• Más ▾</a>
+                <ul class="submenu">
+                    <li><a href="#">📋 Recetas</a></li>
+                    <li><a href="#">📊 Reportes</a></li>
+                    <li><a href="#">⚙️ Configuración</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div class="encabezado-derecha">
+        <button class="boton-icono">🔔</button>
+        <button class="boton-icono">✉️</button>
+        <div class="avatar-usuario">
+            <img th:if="${fotoBase64 != null}" 
+                 th:src="'data:image/jpeg;base64,' + ${fotoBase64}" 
+                 alt="Foto de perfil" 
+                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+            <div th:unless="${fotoBase64 != null}" 
+                 style="width: 100%; height: 100%; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                👤
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Contenedor Principal -->
+<div class="contenedor">
+    <!-- Cuadrícula Superior -->
+    <div class="cuadricula-dashboard">
+        <!-- Perfil del Doctor -->
+        <div class="tarjeta perfil-doctor">
+            <div class="avatar-doctor">
+                <img th:if="${fotoBase64 != null}" 
+                     th:src="'data:image/jpeg;base64,' + ${fotoBase64}" 
+                     alt="Foto del doctor" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;" />
+                <div th:unless="${fotoBase64 != null}" 
+                     style="width: 100%; height: 100%; background: #f0f0f0; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 48px; color: #4154f1;">
+                    👨‍⚕️
+                </div>
+            </div>
+            <h2 class="nombre-doctor" th:text="${usuario.nombres} + ' ' + ${usuario.apellidos}">Dr. Carlos Martínez</h2>
+            <p class="especialidad-doctor">Médico General</p>
+            <div class="lista-estadisticas">
+                <div class="item-estadistica">
+                    <span class="etiqueta-estadistica">Citas hoy:</span>
+                    <span class="valor-estadistica azul">8</span>
+                </div>
+                <div class="item-estadistica">
+                    <span class="etiqueta-estadistica">Pendientes:</span>
+                    <span class="valor-estadistica naranja">3</span>
+                </div>
+                <div class="item-estadistica">
+                    <span class="etiqueta-estadistica">Completadas:</span>
+                    <span class="valor-estadistica verde">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Citas de Hoy -->
+        <div class="tarjeta">
+            <div class="encabezado-tarjeta">
+                <h3 class="titulo-tarjeta">
+                    <span class="icono-titulo-tarjeta">📅</span>
+                    Citas de Hoy
+                </h3>
+                <a href="#" class="enlace-tarjeta">Ver todas</a>
+            </div>
+
+            <div class="item-cita">
+                <div class="hora-cita">
+                    <div class="hora-numero">08:30</div>
+                    <div class="periodo-hora">AM</div>
+                </div>
+                <div class="detalles-cita">
+                    <div class="nombre-cita">María González</div>
+                    <div class="tipo-cita">Chequeo médico</div>
+                </div>
+                <span class="estado-cita estado-confirmada">Confirmada</span>
+            </div>
+
+            <div class="item-cita">
+                <div class="hora-cita">
+                    <div class="hora-numero">09:15</div>
+                    <div class="periodo-hora">AM</div>
+                </div>
+                <div class="detalles-cita">
+                    <div class="nombre-cita">Pedro Ramírez</div>
+                    <div class="tipo-cita">Control</div>
+                </div>
+                <span class="estado-cita estado-confirmada">Confirmada</span>
+            </div>
+
+            <div class="item-cita">
+                <div class="hora-cita">
+                    <div class="hora-numero">10:45</div>
+                    <div class="periodo-hora">AM</div>
+                </div>
+                <div class="detalles-cita">
+                    <div class="nombre-cita">Ana Martínez</div>
+                    <div class="tipo-cita">Revisión rutina</div>
+                </div>
+                <span class="estado-cita estado-pendiente">Pendiente</span>
+            </div>
+        </div>
+
+        <!-- Trabajos de Laboratorio -->
+        <div class="tarjeta">
+            <div class="encabezado-tarjeta">
+                <h3 class="titulo-tarjeta">
+                    <span class="icono-titulo-tarjeta">🧪</span>
+                    Trabajos de Laboratorio
+                </h3>
+                <a href="#" class="enlace-tarjeta">Ver todos</a>
+            </div>
+
+            <div class="item-laboratorio">
+                <div class="titulo-laboratorio">Examen de sangre</div>
+                <div class="detalles-laboratorio">
+                    <span>Paciente: Carlos Ruiz</span>
+                    <span>Entrega: 25/08</span>
+                </div>
+            </div>
+
+            <div class="item-laboratorio">
+                <div class="titulo-laboratorio">Examen de orina</div>
+                <div class="detalles-laboratorio">
+                    <span>Paciente: Elena Gómez</span>
+                    <span>Entrega: 27/08</span>
+                </div>
+            </div>
+
+            <div class="item-laboratorio">
+                <div class="titulo-laboratorio">Examen completo</div>
+                <div class="detalles-laboratorio">
+                    <span>Paciente: Luis Mendoza</span>
+                    <span>Entrega: 22/08</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cuadrícula Inferior -->
+    <div class="cuadricula-dashboard">
+        <!-- Inventario -->
+        <div class="tarjeta seccion-inventario">
+            <div class="encabezado-tarjeta">
+                <h3 class="titulo-tarjeta">
+                    <span class="icono-titulo-tarjeta">📦</span>
+                    Materiales con Stock Mínimo
+                </h3>
+                <a href="#" class="enlace-tarjeta">Ver inventario completo</a>
+            </div>
+
+            <table class="tabla-inventario">
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Stock Actual</th>
+                    <th>Stock Mínimo</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td data-label="Producto">
+                        <div class="celda-producto">
+                            <div class="icono-producto" style="background: #e3f2fd;">💊</div>
+                            <span>Anestesia Lidocaína 2%</span>
+                        </div>
+                    </td>
+                    <td data-label="Categoría">Medicamentos</td>
+                    <td data-label="Stock Actual">5 cajas</td>
+                    <td data-label="Stock Mínimo">10 cajas</td>
+                    <td data-label="Estado"><span class="insignia-estado estado-critico">Crítico</span></td>
+                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
+                </tr>
+                <tr>
+                    <td data-label="Producto">
+                        <div class="celda-producto">
+                            <div class="icono-producto" style="background: #e8f5e9;">🦷</div>
+                            <span>Resina compuesta A2</span>
+                        </div>
+                    </td>
+                    <td data-label="Categoría">Materiales restaurativos</td>
+                    <td data-label="Stock Actual">3 unidades</td>
+                    <td data-label="Stock Mínimo">5 unidades</td>
+                    <td data-label="Estado"><span class="insignia-estado estado-bajo">Bajo</span></td>
+                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
+                </tr>
+                <tr>
+                    <td data-label="Producto">
+                        <div class="celda-producto">
+                            <div class="icono-producto" style="background: #f3e5f5;">🧤</div>
+                            <span>Guantes de látex talla M</span>
+                        </div>
+                    </td>
+                    <td data-label="Categoría">Bioseguridad</td>
+                    <td data-label="Stock Actual">2 cajas</td>
+                    <td data-label="Stock Mínimo">3 cajas</td>
+                    <td data-label="Estado"><span class="insignia-estado estado-bajo">Bajo</span></td>
+                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
+                </tr>
+                <tr>
+                    <td data-label="Producto">
+                        <div class="celda-producto">
+                            <div class="icono-producto" style="background: #ffebee;">💉</div>
+                            <span>Agujas desechables</span>
+                        </div>
+                    </td>
+                    <td data-label="Categoría">Desechables</td>
+                    <td data-label="Stock Actual">15 unidades</td>
+                    <td data-label="Stock Mínimo">25 unidades</td>
+                    <td data-label="Estado"><span class="insignia-estado estado-bajo">Bajo</span></td>
+                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Notas Rápidas -->
+        <div class="tarjeta">
+            <div class="encabezado-tarjeta">
+                <h3 class="titulo-tarjeta">
+                    <span class="icono-titulo-tarjeta">📝</span>
+                    Notas Rápidas
+                </h3>
+                <a href="#" class="enlace-tarjeta">+ Nueva</a>
+            </div>
+
+            <textarea class="entrada-notas" rows="3" placeholder="Escribe una nota nueva..."></textarea>
+            <button class="boton-guardar">Guardar</button>
+
+            <div class="tarjeta-nota">
+                <div class="titulo-nota">
+                    <span>Reunión con proveedores</span>
+                    <div class="iconos-nota">
+                        <span>✏️</span>
+                        <span>🗑️</span>
+                    </div>
+                </div>
+                <div class="contenido-nota">
+                    Programar reunión con nuevos proveedores de material dental para el próximo viernes.
+                </div>
+                <div class="tiempo-nota">Hace 2 horas</div>
+            </div>
+        </div>
+
+        <!-- Actividad Reciente -->
+        <div class="tarjeta seccion-actividad">
+            <div class="encabezado-tarjeta">
+                <h3 class="titulo-tarjeta">
+                    <span class="icono-titulo-tarjeta">📊</span>
+                    Actividad Reciente
+                </h3>
+            </div>
+
+            <div class="item-actividad">
+                <div class="icono-actividad azul">📅</div>
+                <div class="detalles-actividad">
+                    <div class="titulo-actividad">Nueva cita agendada</div>
+                    <div class="descripcion-actividad">Se ha agendado una cita para chequeo médico.</div>
+                    <div class="tiempo-actividad">Hace 10 minutos</div>
+                </div>
+            </div>
+            <div class="item-actividad">
+                <div class="icono-actividad verde">✓</div>
+                <div class="detalles-actividad">
+                    <div class="titulo-actividad">Tratamiento completado</div>
+                    <div class="descripcion-actividad">Chequeo médico para María González completado.</div>
+                    <div class="tiempo-actividad">Hace 45 minutos</div>
+                </div>
+            </div>
+
+            <div class="item-actividad">
+                <div class="icono-actividad morado">🧪</div>
+                <div class="detalles-actividad">
+                    <div class="titulo-actividad">Trabajo de laboratorio recibido</div>
+                    <div class="descripcion-actividad">Examen completo para Luis Mendoza recibido.</div>
+                    <div class="tiempo-actividad">Hace 2 horas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pie de página -->
+<footer class="pie-pagina">
+    <div>© 2025 Gestión Clínica. Todos los derechos reservados.</div>
+    <div class="enlaces-pie">
+        <a href="#">⚙️ Ayuda</a>
+        <a href="#">🔒 Privacidad</a>
+        <a href="#">📄 Términos</a>
+    </div>
+</footer>
+
+<script>
+    // Función para toggle del menú móvil
+    function toggleMenu() {
+        const menu = document.getElementById('menuNavegacion');
+        menu.classList.toggle('activo');
+    }
+
+    // Función para toggle del submenú en móvil
+    function toggleSubmenu(event) {
+        if (window.innerWidth <= 992) {
+            event.preventDefault();
+            const parent = event.target.parentElement;
+            parent.classList.toggle('activo');
+        }
+    }
+
+    // Cerrar menú al hacer clic fuera de él
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('menuNavegacion');
+        const botonMenu = document.querySelector('.boton-menu-movil');
+
+        if (!menu.contains(event.target) && !botonMenu.contains(event.target)) {
+            menu.classList.remove('activo');
+        }
+    });
+
+    // Ajustar comportamiento del menú al cambiar el tamaño de la ventana
+    window.addEventListener('resize', function() {
+        const menu = document.getElementById('menuNavegacion');
+        if (window.innerWidth > 992) {
+            menu.classList.remove('activo');
+            // Remover clase activo de todos los items con submenú
+            document.querySelectorAll('.menu-navegacion li').forEach(item => {
+                item.classList.remove('activo');
+            });
+        }
+    });
+</script>
