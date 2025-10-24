@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "productos")
+@Table(name = "Productos")
 @Data
 public class Producto {
 
@@ -12,9 +12,16 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nombre_producto")
     private String nombre;
-    private String descripcion;
+    
+    @Column(name = "categoria")
+    private String categoria;
+    
+    @Column(name = "stock_actual")
     private Integer cantidad;
-    private Double precio;
+    
+    @Column(name = "stock_minimo")
+    private Integer stockMinimo;
 }
 

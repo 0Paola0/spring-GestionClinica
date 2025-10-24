@@ -3,21 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <title>Producto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #495057;
+        }
+    </style>
 </head>
 <body>
-<h2 th:text="${producto.id} == null ? 'Nuevo Producto' : 'Editar Producto'"></h2>
-<form th:action="@{/almacen/guardar}" th:object="${producto}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <label>Nombre</label>
-    <input type="text" th:field="*{nombre}" required />
-    <label>Descripción</label>
-    <textarea th:field="*{descripcion}"></textarea>
-    <label>Cantidad</label>
-    <input type="number" min="0" th:field="*{cantidad}" required />
-    <label>Precio</label>
-    <input type="number" min="0" step="0.01" th:field="*{precio}" required />
-    <button type="submit">Guardar</button>
-</form>
-<a href="/almacen/lista">Volver</a>
+<div class="container">
+    <h2 th:text="${producto.id} == null ? 'Nuevo Producto' : 'Editar Producto'"></h2>
+    <form th:action="@{/almacen/guardar}" th:object="${producto}" method="post">
+        <input type="hidden" th:field="*{id}" />
+        
+        <label>Nombre del Producto</label>
+        <input type="text" th:field="*{nombre}" required />
+        
+        <label>Categoría</label>
+        <input type="text" th:field="*{categoria}" required />
+        
+        <label>Stock Actual</label>
+        <input type="number" min="0" th:field="*{cantidad}" required />
+        
+        <label>Stock Mínimo</label>
+        <input type="number" min="0" th:field="*{stockMinimo}" required />
+        
+        <button type="submit">Guardar</button>
+    </form>
+    <a href="/almacen/lista" class="back-link">Volver</a>
+</div>
 </body>
 </html>

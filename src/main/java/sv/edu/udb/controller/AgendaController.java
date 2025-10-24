@@ -35,7 +35,7 @@ public class AgendaController {
             return "redirect:/login?error=rol_no_valido";
         }
 
-        // Obtener todas las citas y convertir a DTOs
+        // Obtener todas las citas y convertir a DTO
         List<Cita> citas = citaService.obtenerTodas();
         List<CitaDTO> citasDTO = citas.stream().map(this::convertirADTO).collect(Collectors.toList());
         model.addAttribute("citas", citasDTO);

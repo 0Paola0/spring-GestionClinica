@@ -51,6 +51,38 @@
           color: #2563eb;
           text-decoration: none;
         }
+        
+        /* Estilos para autocompletado */
+        .suggestions {
+          position: absolute;
+          background: white;
+          border: 1px solid #ddd;
+          border-top: none;
+          max-height: 200px;
+          overflow-y: auto;
+          z-index: 1000;
+          width: 100%;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          display: none;
+        }
+        
+        .suggestion-item {
+          padding: 10px;
+          cursor: pointer;
+          border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .suggestion-item:hover {
+          background-color: #f5f5f5;
+        }
+        
+        .suggestion-item:last-child {
+          border-bottom: none;
+        }
+        
+        .input-container {
+          position: relative;
+        }
     </style>
 </head>
 <body>
@@ -59,13 +91,19 @@
     <input type="hidden" th:field="*{id}"/>
 
     <label>Nombre del Paciente</label>
-    <input type="text" th:field="*{nombrePaciente}" required>
+    <div class="input-container">
+        <input type="text" th:field="*{nombrePaciente}" id="nombrePaciente" required>
+        <div id="pacientes-suggestions" class="suggestions"></div>
+    </div>
 
     <label>Examen Específico</label>
     <input type="text" th:field="*{examenEspecifico}" required>
 
     <label>Tipo de Examen</label>
-    <input type="text" th:field="*{tipoExamen}" required>
+    <div class="input-container">
+        <input type="text" th:field="*{tipoExamen}" id="tipoExamen" required>
+        <div id="tipos-suggestions" class="suggestions"></div>
+    </div>
 
     <label>Estado</label>
     <select th:field="*{estado}">
@@ -83,6 +121,95 @@
     <button type="submit">Guardar</button>
     <a href="/laboratorio/lista">← Volver</a>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nombrePacienteInput = document.getElementById('nombrePaciente');
+    const tipoExamenInput = document.getElementById('tipoExamen');
+    const pacientesSuggestions = document.getElementById('pacientes-suggestions');
+    const tiposSuggestions = document.getElementById('tipos-suggestions');
+    
+    let pacientes = [];
+    let tiposCita = [];
+    
+    // Cargar datos al inicializar
+    fetch('/laboratorio/api/pacientes')
+        .then(response => response.json())
+        .then(data => {
+            pacientes = data;
+        })
+        .catch(error => console.error('Error cargando pacientes:', error));
+    
+    fetch('/laboratorio/api/tipos-cita')
+        .then(response => response.json())
+        .then(data => {
+            tiposCita = data;
+        })
+        .catch(error => console.error('Error cargando tipos de cita:', error));
+    
+    // Autocompletado para nombre del paciente
+    nombrePacienteInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        if (query.length < 2) {
+            pacientesSuggestions.style.display = 'none';
+            return;
+        }
+        
+        const filtered = pacientes.filter(paciente => {
+            const nombreCompleto = `${paciente.nombres} ${paciente.apellidos}`.toLowerCase();
+            return nombreCompleto.includes(query);
+        });
+        
+        showSuggestions(pacientesSuggestions, filtered.map(p => `${p.nombres} ${p.apellidos}`));
+    });
+    
+    // Autocompletado para tipo de examen
+    tipoExamenInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        if (query.length < 1) {
+            tiposSuggestions.style.display = 'none';
+            return;
+        }
+        
+        const filtered = tiposCita.filter(tipo => 
+            tipo.toLowerCase().includes(query)
+        );
+        
+        showSuggestions(tiposSuggestions, filtered);
+    });
+    
+    function showSuggestions(container, items) {
+        container.innerHTML = '';
+        
+        if (items.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = item;
+            div.addEventListener('click', function() {
+                const input = container.previousElementSibling;
+                input.value = item;
+                container.style.display = 'none';
+            });
+            container.appendChild(div);
+        });
+        
+        container.style.display = 'block';
+    }
+    
+    // Ocultar sugerencias al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.input-container')) {
+            pacientesSuggestions.style.display = 'none';
+            tiposSuggestions.style.display = 'none';
+        }
+    });
+});
+</script>
 </body>
 </html>
 

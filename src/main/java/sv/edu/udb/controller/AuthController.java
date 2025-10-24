@@ -6,8 +6,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import sv.edu.udb.model.Usuario;
 import sv.edu.udb.model.Cita;
+import sv.edu.udb.model.Laboratorio;
+import sv.edu.udb.model.Producto;
 import sv.edu.udb.service.AuthService;
 import sv.edu.udb.service.CitaService;
+import sv.edu.udb.service.LaboratorioService;
+import sv.edu.udb.service.ProductoService;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Base64;
@@ -22,6 +26,12 @@ public class AuthController {
     
     @Autowired
     private CitaService citaService;
+    
+    @Autowired
+    private LaboratorioService laboratorioService;
+    
+    @Autowired
+    private ProductoService productoService;
     
     @GetMapping("/")
     public String mostrarLogin() {
@@ -137,6 +147,24 @@ public class AuthController {
             model.addAttribute("citasPendientes", 0);
             model.addAttribute("citasCompletadas", 0);
             model.addAttribute("citasHoy", new ArrayList<>());
+        }
+        
+        // Cargar datos de laboratorio
+        try {
+            List<Laboratorio> laboratorios = laboratorioService.listarTodos();
+            model.addAttribute("laboratorios", laboratorios);
+        } catch (Exception e) {
+            // En caso de error, establecer lista vacía
+            model.addAttribute("laboratorios", new ArrayList<>());
+        }
+        
+        // Cargar datos de productos para inventario
+        try {
+            List<Producto> productos = productoService.listarTodos();
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            // En caso de error, establecer lista vacía
+            model.addAttribute("productos", new ArrayList<>());
         }
         
         return "principal";

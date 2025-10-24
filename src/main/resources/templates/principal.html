@@ -838,30 +838,21 @@
                     <span class="icono-titulo-tarjeta">🧪</span>
                     Trabajos de Laboratorio
                 </h3>
-                <a href="#" class="enlace-tarjeta">Ver todos</a>
+                <a href="/laboratorio/lista" class="enlace-tarjeta">Ver todos</a>
             </div>
 
-            <div class="item-laboratorio">
-                <div class="titulo-laboratorio">Examen de sangre</div>
-                <div class="detalles-laboratorio">
-                    <span>Paciente: Carlos Ruiz</span>
-                    <span>Entrega: 25/08</span>
-                </div>
+            <!-- Laboratorios dinámicos -->
+            <div th:if="${#lists.isEmpty(laboratorios)}" class="sin-citas">
+                <p>No hay trabajos de laboratorio registrados</p>
             </div>
-
-            <div class="item-laboratorio">
-                <div class="titulo-laboratorio">Examen de orina</div>
+            
+            <div th:each="lab : ${laboratorios}" class="item-laboratorio">
+                <div class="titulo-laboratorio" th:text="${lab.examenEspecifico}">Examen de sangre</div>
                 <div class="detalles-laboratorio">
-                    <span>Paciente: Elena Gómez</span>
-                    <span>Entrega: 27/08</span>
-                </div>
-            </div>
-
-            <div class="item-laboratorio">
-                <div class="titulo-laboratorio">Examen completo</div>
-                <div class="detalles-laboratorio">
-                    <span>Paciente: Luis Mendoza</span>
-                    <span>Entrega: 22/08</span>
+                    <span th:text="'Paciente: ' + ${lab.nombrePaciente}">Paciente: Carlos Ruiz</span>
+                    <span th:if="${lab.fechaProgramacion != null}" 
+                          th:text="'Entrega: ' + ${#temporals.format(lab.fechaProgramacion, 'dd/MM')}">Entrega: 25/08</span>
+                    <span th:unless="${lab.fechaProgramacion != null}">Sin fecha programada</span>
                 </div>
             </div>
         </div>
@@ -876,7 +867,7 @@
                     <span class="icono-titulo-tarjeta">📦</span>
                     Materiales con Stock Mínimo
                 </h3>
-                <a href="#" class="enlace-tarjeta">Ver inventario completo</a>
+                <a href="/almacen/lista" class="enlace-tarjeta">Ver inventario completo</a>
             </div>
 
             <table class="tabla-inventario">
@@ -891,57 +882,28 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
+                <!-- Productos dinámicos -->
+                <div th:if="${#lists.isEmpty(productos)}" class="sin-citas">
+                    <p>No hay productos registrados</p>
+                </div>
+                
+                <tr th:each="prod : ${productos}">
                     <td data-label="Producto">
                         <div class="celda-producto">
                             <div class="icono-producto" style="background: #e3f2fd;">💊</div>
-                            <span>Anestesia Lidocaína 2%</span>
+                            <span th:text="${prod.nombre}">Anestesia Lidocaína 2%</span>
                         </div>
                     </td>
-                    <td data-label="Categoría">Medicamentos</td>
-                    <td data-label="Stock Actual">5 cajas</td>
-                    <td data-label="Stock Mínimo">10 cajas</td>
-                    <td data-label="Estado"><span class="insignia-estado estado-critico">Crítico</span></td>
-                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
-                </tr>
-                <tr>
-                    <td data-label="Producto">
-                        <div class="celda-producto">
-                            <div class="icono-producto" style="background: #e8f5e9;">🦷</div>
-                            <span>Resina compuesta A2</span>
-                        </div>
+                    <td data-label="Categoría" th:text="${prod.categoria}">Medicamentos</td>
+                    <td data-label="Stock Actual" th:text="${prod.cantidad} + ' unidades'">5 cajas</td>
+                    <td data-label="Stock Mínimo" th:text="${prod.stockMinimo} + ' unidades'">10 cajas</td>
+                    <td data-label="Estado">
+                        <span th:if="${prod.cantidad <= prod.stockMinimo}" 
+                              class="insignia-estado estado-critico">Crítico</span>
+                        <span th:unless="${prod.cantidad <= prod.stockMinimo}" 
+                              class="insignia-estado estado-bajo">Normal</span>
                     </td>
-                    <td data-label="Categoría">Materiales restaurativos</td>
-                    <td data-label="Stock Actual">3 unidades</td>
-                    <td data-label="Stock Mínimo">5 unidades</td>
-                    <td data-label="Estado"><span class="insignia-estado estado-bajo">Bajo</span></td>
-                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
-                </tr>
-                <tr>
-                    <td data-label="Producto">
-                        <div class="celda-producto">
-                            <div class="icono-producto" style="background: #f3e5f5;">🧤</div>
-                            <span>Guantes de látex talla M</span>
-                        </div>
-                    </td>
-                    <td data-label="Categoría">Bioseguridad</td>
-                    <td data-label="Stock Actual">2 cajas</td>
-                    <td data-label="Stock Mínimo">3 cajas</td>
-                    <td data-label="Estado"><span class="insignia-estado estado-bajo">Bajo</span></td>
-                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
-                </tr>
-                <tr>
-                    <td data-label="Producto">
-                        <div class="celda-producto">
-                            <div class="icono-producto" style="background: #ffebee;">💉</div>
-                            <span>Agujas desechables</span>
-                        </div>
-                    </td>
-                    <td data-label="Categoría">Desechables</td>
-                    <td data-label="Stock Actual">15 unidades</td>
-                    <td data-label="Stock Mínimo">25 unidades</td>
-                    <td data-label="Estado"><span class="insignia-estado estado-bajo">Bajo</span></td>
-                    <td data-label="Acción"><a href="#" class="boton-ordenar">Ordenar</a></td>
+                    <td data-label="Acción"><a href="/almacen/lista" class="boton-ordenar">Ver inventario</a></td>
                 </tr>
                 </tbody>
             </table>
