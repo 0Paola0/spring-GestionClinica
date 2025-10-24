@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratorios</title>
+    <link rel="icon" href="/img/logo.png">
+    <style>
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          background: #f8f9fa;
+          margin: 0;
+        }
+
+        header {
+          background: linear-gradient(135deg, #2563eb, #1e40af);
+          color: white;
+          padding: 20px 40px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        header img {
+          width: 50px;
+          height: 50px;
+          border-radius: 8px;
+          background: white;
+        }
+
+        h1 { font-size: 32px; }
+
+        .contenedor {
+          max-width: 1200px;
+          margin: 40px auto;
+          background: white;
+          border-radius: 10px;
+          padding: 30px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .encabezado-tabla {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 25px;
+        }
+
+        .buscador input {
+          width: 300px;
+          padding: 10px;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+        }
+
+        .boton-nuevo {
+          background: #2563eb;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        .tabla {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        th {
+          background: #f9fafb;
+          padding: 15px;
+          color: #6b7280;
+          font-size: 13px;
+          text-transform: uppercase;
+        }
+
+        td {
+          padding: 15px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+        .acciones a {
+          padding: 8px 14px;
+          border-radius: 6px;
+          color: white;
+          text-decoration: none;
+          font-size: 13px;
+          margin-right: 5px;
+        }
+
+        .editar { background: #f59e0b; }
+        .eliminar { background: #ef4444; }
+    </style>
+</head>
+<body>
+<header>
+    <img src="/img/logo.png" alt="Logo">
+    <h1>Gestión de Laboratorios</h1>
+</header>
+
+<div class="contenedor">
+    <div class="encabezado-tabla">
+        <div class="buscador">
+            <input type="text" id="buscador" placeholder="Buscar examen o paciente...">
+        </div>
+        <form action="/laboratorio/nuevo" method="get">
+            <button class="boton-nuevo">Nuevo Examen</button>
+        </form>
+    </div>
+
+    <table class="tabla">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Examen</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="tabla-labs">
+        <tr th:each="lab : ${laboratorios}">
+            <td th:text="${lab.id}"></td>
+            <td th:text="${lab.nombrePaciente}"></td>
+            <td th:text="${lab.examenEspecifico}"></td>
+            <td th:text="${lab.tipoExamen}"></td>
+            <td th:text="${lab.estado}"></td>
+            <td th:text="${lab.fechaProgramacion}"></td>
+            <td class="acciones">
+                <a th:href="@{'/laboratorio/editar/' + ${lab.id}}" class="editar">Editar</a>
+                <a th:href="@{'/laboratorio/eliminar/' + ${lab.id}}" class="eliminar" onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('buscador').addEventListener('input', function() {
+      const filtro = this.value.toLowerCase();
+      document.querySelectorAll('#tabla-labs tr').forEach(fila => {
+        fila.style.display = fila.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+      });
+    });
+</script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${laboratorio.id == null ? 'Nuevo Examen' : 'Editar Examen'}"></title>
+    <style>
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          background: #f3f4f6;
+          margin: 0;
+          padding: 40px;
+        }
+
+        form {
+          max-width: 600px;
+          margin: auto;
+          background: white;
+          padding: 30px;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        label {
+          display: block;
+          margin-top: 15px;
+          font-weight: bold;
+        }
+
+        input, select, textarea {
+          width: 100%;
+          padding: 10px;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          margin-top: 5px;
+        }
+
+        button {
+          margin-top: 20px;
+          background: #2563eb;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        a {
+          display: inline-block;
+          margin-top: 10px;
+          color: #2563eb;
+          text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/laboratorio/guardar}" th:object="${laboratorio}" method="post">
+    <h2 th:text="${laboratorio.id == null ? 'Nuevo Examen de Laboratorio' : 'Editar Examen'}"></h2>
+    <input type="hidden" th:field="*{id}"/>
+
+    <label>Nombre del Paciente</label>
+    <input type="text" th:field="*{nombrePaciente}" required>
+
+    <label>Examen Específico</label>
+    <input type="text" th:field="*{examenEspecifico}" required>
+
+    <label>Tipo de Examen</label>
+    <input type="text" th:field="*{tipoExamen}" required>
+
+    <label>Estado</label>
+    <select th:field="*{estado}">
+        <option value="Pendiente">Pendiente</option>
+        <option value="En proceso">En proceso</option>
+        <option value="Completado">Completado</option>
+    </select>
+
+    <label>Fecha de Programación</label>
+    <input type="date" th:field="*{fechaProgramacion}">
+
+    <label>Notas</label>
+    <textarea th:field="*{notas}"></textarea>
+
+    <button type="submit">Guardar</button>
+    <a href="/laboratorio/lista">← Volver</a>
+</form>
+</body>
+</html>
+
+
+
+
