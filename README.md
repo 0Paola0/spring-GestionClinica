@@ -12,6 +12,11 @@ INTEGRANTES:
 
 -Andrea Paola Calles Arias CA222101
 
+
 Link de descarga para la base de datos: https://drive.google.com/file/d/1_5Sd_eDK_Nsoq5IcxptoqJJkfQ2x_R6-/view?usp=sharing
+
+[Manual de usuario y de programador.pdf](https://github.com/user-attachments/files/23129449/Manual.de.usuario.y.de.programador.pdf)
+
+
 
 
