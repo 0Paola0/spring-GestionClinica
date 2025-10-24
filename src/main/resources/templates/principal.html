@@ -291,6 +291,13 @@
             font-size: 13px;
             font-weight: 500;
         }
+        
+        .sin-citas {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
 
         .estado-confirmada {
             background: #d4edda;
@@ -733,14 +740,13 @@
     <nav>
         <ul class="menu-navegacion" id="menuNavegacion">
             <li><a href="/pacientes">Ficha Paciente</a></li>
-            <li><a href="#">Agenda</a></li>
+            <li><a href="/agenda">Agenda</a></li>
             <li><a href="#">Laboratorio</a></li>
             <li><a href="#">Almacén</a></li>
             <li>
                 <a href="#" onclick="toggleSubmenu(event)">••• Más ▾</a>
                 <ul class="submenu">
                     <li><a href="#">📋 Recetas</a></li>
-                    <li><a href="#">📊 Reportes</a></li>
                     <li><a href="#">⚙️ Configuración</a></li>
                 </ul>
             </li>
@@ -783,15 +789,15 @@
             <div class="lista-estadisticas">
                 <div class="item-estadistica">
                     <span class="etiqueta-estadistica">Citas hoy:</span>
-                    <span class="valor-estadistica azul">8</span>
+                    <span class="valor-estadistica azul" th:text="${totalCitas}">0</span>
                 </div>
                 <div class="item-estadistica">
                     <span class="etiqueta-estadistica">Pendientes:</span>
-                    <span class="valor-estadistica naranja">3</span>
+                    <span class="valor-estadistica naranja" th:text="${citasPendientes}">0</span>
                 </div>
                 <div class="item-estadistica">
                     <span class="etiqueta-estadistica">Completadas:</span>
-                    <span class="valor-estadistica verde">5</span>
+                    <span class="valor-estadistica verde" th:text="${citasCompletadas}">0</span>
                 </div>
             </div>
         </div>
@@ -803,43 +809,25 @@
                     <span class="icono-titulo-tarjeta">📅</span>
                     Citas de Hoy
                 </h3>
-                <a href="#" class="enlace-tarjeta">Ver todas</a>
+                <a href="/listaCitas" class="enlace-tarjeta">Ver todas</a>
             </div>
 
-            <div class="item-cita">
-                <div class="hora-cita">
-                    <div class="hora-numero">08:30</div>
-                    <div class="periodo-hora">AM</div>
-                </div>
-                <div class="detalles-cita">
-                    <div class="nombre-cita">María González</div>
-                    <div class="tipo-cita">Chequeo médico</div>
-                </div>
-                <span class="estado-cita estado-confirmada">Confirmada</span>
+            <!-- Citas dinámicas del día actual -->
+            <div th:if="${#lists.isEmpty(citasHoy)}" class="sin-citas">
+                <p>No hay citas programadas para hoy</p>
             </div>
-
-            <div class="item-cita">
+            
+            <div th:each="cita : ${citasHoy}" class="item-cita">
                 <div class="hora-cita">
-                    <div class="hora-numero">09:15</div>
-                    <div class="periodo-hora">AM</div>
+                    <div class="hora-numero" th:text="${#strings.substring(cita.hora, 0, 5)}">08:30</div>
+                    <div class="periodo-hora" th:text="${#strings.substring(cita.hora, 6, 8)}">AM</div>
                 </div>
                 <div class="detalles-cita">
-                    <div class="nombre-cita">Pedro Ramírez</div>
-                    <div class="tipo-cita">Control</div>
+                    <div class="nombre-cita" th:text="${cita.nombrePaciente}">María González</div>
+                    <div class="tipo-cita" th:text="${cita.motivoConsulta}">Chequeo médico</div>
                 </div>
-                <span class="estado-cita estado-confirmada">Confirmada</span>
-            </div>
-
-            <div class="item-cita">
-                <div class="hora-cita">
-                    <div class="hora-numero">10:45</div>
-                    <div class="periodo-hora">AM</div>
-                </div>
-                <div class="detalles-cita">
-                    <div class="nombre-cita">Ana Martínez</div>
-                    <div class="tipo-cita">Revisión rutina</div>
-                </div>
-                <span class="estado-cita estado-pendiente">Pendiente</span>
+                <span th:class="'estado-cita estado-' + ${#strings.toLowerCase(cita.estado)}" 
+                      th:text="${cita.estado}">Confirmada</span>
             </div>
         </div>
 

@@ -5,16 +5,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import sv.edu.udb.model.Usuario;
+import sv.edu.udb.model.Cita;
 import sv.edu.udb.service.AuthService;
+import sv.edu.udb.service.CitaService;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Base64;
+import java.util.List;
+import java.util.ArrayList;
 
 @Controller
 public class AuthController {
     
     @Autowired
     private AuthService authService;
+    
+    @Autowired
+    private CitaService citaService;
     
     @GetMapping("/")
     public String mostrarLogin() {
@@ -99,6 +106,37 @@ public class AuthController {
         if (usuario.getFoto() != null && usuario.getFoto().length > 0) {
             String fotoBase64 = Base64.getEncoder().encodeToString(usuario.getFoto());
             model.addAttribute("fotoBase64", fotoBase64);
+        }
+        
+        // Cargar estadísticas y citas del día actual
+        try {
+            // Obtener fecha actual
+            java.sql.Date fechaActual = new java.sql.Date(System.currentTimeMillis());
+            
+            // Obtener todas las citas del día actual
+            List<Cita> citasHoy = citaService.obtenerPorFecha(fechaActual);
+            
+            // Calcular estadísticas
+            int totalCitas = citasHoy.size();
+            int citasPendientes = (int) citasHoy.stream()
+                    .filter(cita -> "Pendiente".equals(cita.getEstado()))
+                    .count();
+            int citasCompletadas = (int) citasHoy.stream()
+                    .filter(cita -> "Completada".equals(cita.getEstado()))
+                    .count();
+            
+            // Agregar estadísticas al modelo
+            model.addAttribute("totalCitas", totalCitas);
+            model.addAttribute("citasPendientes", citasPendientes);
+            model.addAttribute("citasCompletadas", citasCompletadas);
+            model.addAttribute("citasHoy", citasHoy);
+            
+        } catch (Exception e) {
+            // En caso de error, establecer valores por defecto
+            model.addAttribute("totalCitas", 0);
+            model.addAttribute("citasPendientes", 0);
+            model.addAttribute("citasCompletadas", 0);
+            model.addAttribute("citasHoy", new ArrayList<>());
         }
         
         return "principal";

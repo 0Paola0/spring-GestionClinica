@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sv.edu.udb.model.Usuario;
 import sv.edu.udb.repository.UsuarioRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,5 +35,9 @@ public class UsuarioService {
     
     public Optional<Usuario> buscarPorUsuario(String nombreUsuario) {
         return usuarioRepository.findByNombreUsuario(nombreUsuario);
+    }
+    
+    public List<Usuario> obtenerTodos() {
+        return usuarioRepository.findAll();
     }
 }

@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Citas Médicas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .encabezado-principal {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-titulo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-header {
+           width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-header img {
+           width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .encabezado-principal h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .controles-usuario {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icono-configuracion {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            fill: white;
+            transition: all 0.3s;
+        }
+
+        .icono-configuracion:hover {
+            transform: rotate(90deg);
+        }
+
+        .perfil-usuario {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .avatar-usuario {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: white;
+        }
+
+        .nombre-usuario {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .contenedor-principal {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .encabezado-seccion {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .info-agenda h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .info-agenda p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .boton-ver-citas {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .boton-ver-citas:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .controles-calendario {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .navegacion-fecha {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .mes-actual {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .boton-navegacion {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .boton-navegacion:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .vista-toggle {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .boton-vista {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .boton-vista.activo {
+            background: #6366f1;
+            color: white;
+        }
+
+        .controles-derecha {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .boton-filtro {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .boton-filtro:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .boton-filtro svg {
+            width: 20px;
+            height: 20px;
+            fill: #6b7280;
+        }
+
+        .buscador-citas {
+            position: relative;
+        }
+
+        .buscador-citas input {
+            width: 300px;
+            padding: 10px 40px 10px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .buscador-citas input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .buscador-citas svg {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            fill: #9ca3af;
+        }
+
+        .calendario {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .encabezado-calendario {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .dia-semana {
+            padding: 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: capitalize;
+        }
+
+        .cuerpo-calendario {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .celda-dia {
+            min-height: 120px;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .celda-dia:hover {
+            background: #f8fafc;
+        }
+
+        .celda-dia:nth-child(7n) {
+            border-right: none;
+        }
+
+        .numero-dia {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .celda-dia.otro-mes .numero-dia {
+            color: #d1d5db;
+        }
+
+        .celda-dia.hoy {
+            background: #eff6ff;
+        }
+
+        .celda-dia.hoy .numero-dia {
+            background: #2563eb;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+
+        .citas-dia {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .cita-bloque {
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 11px;
+            color: white;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cita-bloque:hover {
+            opacity: 0.8;
+            transform: translateX(2px);
+        }
+
+        /* Colores basados en tipos reales de cita */
+        .cita-consulta-general {
+            background: #6366f1; /* Morado para Consulta General */
+        }
+
+        .cita-laboratorio-clinico {
+            background: #10b981; /* Verde para Laboratorio Clínico */
+        }
+
+        .cita-farmacia {
+            background: #f59e0b; /* Naranja para Farmacia */
+        }
+
+        .cita-especialidad-medica {
+            background: #ef4444; /* Rojo para Especialidad Médica */
+        }
+
+        .leyenda {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .leyenda-titulo {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-muestra {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        .leyenda-texto {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        /* Vista de semana */
+        .vista-semana {
+            display: none;
+        }
+
+        .vista-semana.activa {
+            display: block;
+        }
+
+        .semana-contenedor {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .hora-columna {
+            background: #f9fafb;
+            border-right: 2px solid #e5e7eb;
+        }
+
+        .hora-slot {
+            height: 60px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .dia-columna {
+            border-right: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .dia-columna:last-child {
+            border-right: none;
+        }
+
+        .dia-header {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dia-slot {
+            height: 60px;
+            border-bottom: 1px solid #e5e7eb;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dia-slot:hover {
+            background: #f8fafc;
+        }
+
+        .cita-semana {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            color: white;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Vista de día */
+        .vista-dia {
+            display: none;
+        }
+
+        .vista-dia.activa {
+            display: block;
+        }
+
+        .dia-contenedor {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .dia-header-detalle {
+            background: #f9fafb;
+            padding: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .dia-fecha {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .dia-nombre {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .horario-dia {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+        }
+
+        .hora-lista {
+            background: #f9fafb;
+            border-right: 2px solid #e5e7eb;
+        }
+
+        .hora-item {
+            height: 80px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .citas-lista {
+            padding: 0;
+        }
+
+        .cita-item {
+            height: 80px;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cita-item:hover {
+            background: #f8fafc;
+        }
+
+        .cita-hora {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            min-width: 60px;
+        }
+
+        .cita-info {
+            flex: 1;
+        }
+
+        .cita-paciente {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .cita-motivo {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .cita-tipo-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+<header class="encabezado-principal">
+    <div class="logo-titulo">
+        <div class="logo-header">
+            <img src="/img/logo.png" alt="Logo">
+        </div>
+        <h1>Gestión Clínica</h1>
+    </div>
+    <div class="controles-usuario">
+        <svg class="icono-configuracion" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+        </svg>
+        <div class="perfil-usuario">
+            <div class="avatar-usuario">
+                <img th:if="${fotoBase64 != null}"
+                     th:src="'data:image/jpeg;base64,' + ${fotoBase64}"
+                     alt="Foto de perfil"
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                <div th:unless="${fotoBase64 != null}"
+                     style="width: 100%; height: 100%; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                    <span>👤</span>
+                </div>
+            </div>
+            <span class="nombre-usuario" th:text="${nombreUsuario}">Usuario</span>
+        </div>
+    </div>
+</header>
+
+<main class="contenedor-principal">
+    <div class="encabezado-seccion">
+        <div class="info-agenda">
+            <h2>Agenda de Citas Médicas</h2>
+            <p>Gestiona todas las citas de tu clínica</p>
+        </div>
+        <a href="/listaCitas" class="boton-ver-citas">Ver citas</a>
+    </div>
+
+    <div class="controles-calendario">
+        <div class="navegacion-fecha">
+            <button class="boton-navegacion" onclick="cambiarMes(-1)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#6b7280">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+            </button>
+            <h3 class="mes-actual" id="mes-actual">Enero 2025</h3>
+            <button class="boton-navegacion" onclick="cambiarMes(1)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#6b7280">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="vista-toggle">
+            <button class="boton-vista activo" onclick="cambiarVista('mes')">Mes</button>
+            <button class="boton-vista" onclick="cambiarVista('semana')">Semana</button>
+            <button class="boton-vista" onclick="cambiarVista('dia')">Día</button>
+        </div>
+
+        <div class="controles-derecha">
+            <button class="boton-filtro">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                </svg>
+            </button>
+            <div class="buscador-citas">
+                <input type="text" placeholder="Buscar cita..." onkeyup="filtrarCitas(this.value)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Vista de Mes -->
+    <div id="vista-mes" class="calendario">
+        <div class="encabezado-calendario">
+            <div class="dia-semana">Lunes</div>
+            <div class="dia-semana">Martes</div>
+            <div class="dia-semana">Miércoles</div>
+            <div class="dia-semana">Jueves</div>
+            <div class="dia-semana">Viernes</div>
+            <div class="dia-semana">Sábado</div>
+            <div class="dia-semana">Domingo</div>
+        </div>
+        <div class="cuerpo-calendario" id="cuerpo-calendario">
+            <!-- Se genera dinámicamente con JavaScript -->
+        </div>
+    </div>
+
+    <!-- Vista de Semana -->
+    <div id="vista-semana" class="vista-semana" style="display: none;">
+        <div class="semana-contenedor" id="semana-contenedor">
+            <!-- Se genera dinámicamente con JavaScript -->
+        </div>
+    </div>
+
+    <!-- Vista de Día -->
+    <div id="vista-dia" class="vista-dia" style="display: none;">
+        <div class="dia-contenedor" id="dia-contenedor">
+            <!-- Se genera dinámicamente con JavaScript -->
+        </div>
+    </div>
+
+    <div class="leyenda">
+        <span class="leyenda-titulo">Tipos de cita:</span>
+        <div class="leyenda-item">
+            <div class="color-muestra cita-consulta-general"></div>
+            <span class="leyenda-texto">Consulta General</span>
+        </div>
+        <div class="leyenda-item">
+            <div class="color-muestra cita-laboratorio-clinico"></div>
+            <span class="leyenda-texto">Laboratorio Clínico</span>
+        </div>
+        <div class="leyenda-item">
+            <div class="color-muestra cita-farmacia"></div>
+            <span class="leyenda-texto">Farmacia</span>
+        </div>
+        <div class="leyenda-item">
+            <div class="color-muestra cita-especialidad-medica"></div>
+            <span class="leyenda-texto">Especialidad Médica</span>
+        </div>
+    </div>
+</main>
+
+<script>
+// Variable global para las citas
+let citas = [];
+
+// Función para cargar citas desde el servidor
+async function cargarCitas() {
+    try {
+        const response = await fetch('/api/citas');
+        if (response.ok) {
+            citas = await response.json();
+            console.log('Citas cargadas desde API:', citas);
+            console.log('Número de citas:', citas.length);
+            
+            // Actualizar la vista actual
+            actualizarVista();
+        } else {
+            console.error('Error al cargar citas:', response.status);
+            citas = [];
+            // Inicializar vista vacía
+            actualizarVista();
+        }
+    } catch (error) {
+        console.error('Error al cargar citas:', error);
+        citas = [];
+        // Inicializar vista vacía
+        actualizarVista();
+    }
+}
+
+// Función para actualizar la vista actual
+function actualizarVista() {
+    if (vistaActual === 'mes') {
+        generarCalendarioMes();
+    } else if (vistaActual === 'semana') {
+        generarVistaSemana();
+    } else if (vistaActual === 'dia') {
+        generarVistaDia();
+    }
+}
+
+// Cargar citas al inicializar la página
+document.addEventListener('DOMContentLoaded', function() {
+    cargarCitas();
+});
+
+let fechaActual = new Date();
+let vistaActual = 'mes';
+
+// Nombres de meses y días
+const meses = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
+const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+// Función para obtener la clase CSS según el tipo de cita
+function obtenerClaseCita(tipo) {
+    const tipos = {
+        'Consulta general': 'cita-consulta-general',
+        'Laboratorio clínico': 'cita-laboratorio-clinico',
+        'Farmacia': 'cita-farmacia',
+        'Especialidad médica': 'cita-especialidad-medica'
+    };
+    return tipos[tipo] || 'cita-consulta-general';
+}
+
+// Función para formatear fecha
+function formatearFecha(fecha) {
+    return fecha.toISOString().split('T')[0];
+}
+
+// Función para obtener citas de una fecha específica
+function obtenerCitasPorFecha(fecha) {
+    return citas.filter(cita => {
+        // Convertir la fecha de la cita a formato YYYY-MM-DD
+        const fechaCita = new Date(cita.fecha);
+        const fechaFormateada = fechaCita.toISOString().split('T')[0];
+        return fechaFormateada === fecha;
+    });
+}
+
+// Función para generar el calendario del mes
+function generarCalendarioMes() {
+    const año = fechaActual.getFullYear();
+    const mes = fechaActual.getMonth();
+    
+    // Actualizar título
+    document.getElementById('mes-actual').textContent = `${meses[mes]} ${año}`;
+    
+    // Obtener primer día del mes y cuántos días tiene
+    const primerDia = new Date(año, mes, 1);
+    const ultimoDia = new Date(año, mes + 1, 0);
+    const diasEnMes = ultimoDia.getDate();
+    
+    // Obtener el día de la semana del primer día (0 = domingo, 1 = lunes, etc.)
+    let diaSemanaInicio = primerDia.getDay();
+    // Convertir domingo (0) a 7 para que sea el último día
+    if (diaSemanaInicio === 0) diaSemanaInicio = 7;
+    
+    // Obtener días del mes anterior para completar la primera semana
+    const mesAnterior = new Date(año, mes - 1, 0);
+    const diasMesAnterior = mesAnterior.getDate();
+    
+    let html = '';
+    
+    // Generar días del mes anterior
+    for (let i = diaSemanaInicio - 1; i > 0; i--) {
+        const dia = diasMesAnterior - i + 1;
+        html += `
+            <div class="celda-dia otro-mes">
+                <div class="numero-dia">${dia}</div>
+            </div>
+        `;
+    }
+    
+    // Generar días del mes actual
+    for (let dia = 1; dia <= diasEnMes; dia++) {
+        const fecha = formatearFecha(new Date(año, mes, dia));
+        const citasDelDia = obtenerCitasPorFecha(fecha);
+        const esHoy = fecha === formatearFecha(new Date());
+        
+        let citasHtml = '';
+        citasDelDia.forEach(cita => {
+            // Formatear la hora correctamente
+            const hora = cita.hora ? cita.hora.substring(0, 5) : '00:00';
+            citasHtml += `
+                <div class="cita-bloque ${obtenerClaseCita(cita.tipoCita)}" 
+                     title="${cita.nombrePaciente} - ${cita.motivoConsulta || 'Sin motivo'} - ${hora}">
+                    ${cita.nombrePaciente} - ${hora}
+                </div>
+            `;
+        });
+        
+        html += `
+            <div class="celda-dia ${esHoy ? 'hoy' : ''}" onclick="seleccionarDia('${fecha}')">
+                <div class="numero-dia">${dia}</div>
+                <div class="citas-dia">${citasHtml}</div>
+            </div>
+        `;
+    }
+    
+    // Completar con días del mes siguiente
+    const diasRestantes = 42 - (diaSemanaInicio - 1 + diasEnMes);
+    for (let dia = 1; dia <= diasRestantes; dia++) {
+        html += `
+            <div class="celda-dia otro-mes">
+                <div class="numero-dia">${dia}</div>
+            </div>
+        `;
+    }
+    
+    document.getElementById('cuerpo-calendario').innerHTML = html;
+}
+
+// Función para cambiar de mes
+function cambiarMes(direccion) {
+    fechaActual.setMonth(fechaActual.getMonth() + direccion);
+    generarCalendarioMes();
+}
+
+// Función para generar vista de semana
+function generarVistaSemana() {
+    const año = fechaActual.getFullYear();
+    const mes = fechaActual.getMonth();
+    const dia = fechaActual.getDate();
+    
+    // Obtener el lunes de la semana actual
+    const lunes = new Date(fechaActual);
+    const diaSemana = lunes.getDay();
+    const diasHastaLunes = diaSemana === 0 ? 6 : diaSemana - 1;
+    lunes.setDate(dia - diasHastaLunes);
+    
+    let html = '<div class="hora-columna">';
+    
+    // Generar slots de hora
+    for (let hora = 7; hora <= 19; hora++) {
+        html += `<div class="hora-slot">${hora.toString().padStart(2, '0')}:00</div>`;
+    }
+    html += '</div>';
+    
+    // Generar columnas de días
+    for (let i = 0; i < 7; i++) {
+        const fecha = new Date(lunes);
+        fecha.setDate(lunes.getDate() + i);
+        const fechaStr = formatearFecha(fecha);
+        const citasDelDia = obtenerCitasPorFecha(fechaStr);
+        
+        html += `
+            <div class="dia-columna">
+                <div class="dia-header">
+                    ${diasSemana[fecha.getDay()]}<br>
+                    ${fecha.getDate()}
+                </div>
+        `;
+        
+        // Generar slots de hora para este día
+        for (let hora = 7; hora <= 19; hora++) {
+            const citasEnEstaHora = citasDelDia.filter(cita => {
+                const horaCita = cita.hora ? parseInt(cita.hora.split(':')[0]) : 0;
+                return horaCita === hora;
+            });
+            
+            html += `<div class="dia-slot">`;
+            
+            citasEnEstaHora.forEach(cita => {
+                const horaFormateada = cita.hora ? cita.hora.substring(0, 5) : '00:00';
+                html += `
+                    <div class="cita-semana ${obtenerClaseCita(cita.tipoCita)}" 
+                         title="${cita.nombrePaciente} - ${cita.motivoConsulta || 'Sin motivo'}">
+                        ${cita.nombrePaciente} - ${horaFormateada}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+        }
+        
+        html += '</div>';
+    }
+    
+    document.getElementById('semana-contenedor').innerHTML = html;
+}
+
+// Función para generar vista de día
+function generarVistaDia() {
+    const fecha = formatearFecha(fechaActual);
+    const citasDelDia = obtenerCitasPorFecha(fecha);
+    
+    const fechaFormateada = `${diasSemana[fechaActual.getDay()]}, ${fechaActual.getDate()} de ${meses[fechaActual.getMonth()]} de ${fechaActual.getFullYear()}`;
+    
+    let html = `
+        <div class="dia-header-detalle">
+            <div class="dia-fecha">${fechaFormateada}</div>
+            <div class="dia-nombre">${citasDelDia.length} citas programadas</div>
+        </div>
+        <div class="horario-dia">
+            <div class="hora-lista">
+    `;
+    
+    // Generar lista de horas
+    for (let hora = 7; hora <= 19; hora++) {
+        html += `<div class="hora-item">${hora.toString().padStart(2, '0')}:00</div>`;
+    }
+    
+    html += '</div><div class="citas-lista">';
+    
+    // Generar citas del día
+    for (let hora = 7; hora <= 19; hora++) {
+        const citasEnEstaHora = citasDelDia.filter(cita => {
+            const horaCita = cita.hora ? parseInt(cita.hora.split(':')[0]) : 0;
+            return horaCita === hora;
+        });
+        
+        if (citasEnEstaHora.length > 0) {
+            citasEnEstaHora.forEach(cita => {
+                const horaFormateada = cita.hora ? cita.hora.substring(0, 5) : '00:00';
+                html += `
+                    <div class="cita-item" onclick="verDetalleCita(${cita.id})">
+                        <div class="cita-hora">${horaFormateada}</div>
+                        <div class="cita-info">
+                            <div class="cita-paciente">${cita.nombrePaciente}</div>
+                            <div class="cita-motivo">${cita.motivoConsulta || 'Sin motivo especificado'}</div>
+                        </div>
+                        <div class="cita-tipo-badge ${obtenerClaseCita(cita.tipoCita)}">${cita.tipoCita}</div>
+                    </div>
+                `;
+            });
+        } else {
+            html += `<div class="cita-item" style="opacity: 0.3;">
+                <div class="cita-hora">${hora.toString().padStart(2, '0')}:00</div>
+                <div class="cita-info">
+                    <div class="cita-paciente">Sin citas</div>
+                </div>
+            </div>`;
+        }
+    }
+    
+    html += '</div></div>';
+    
+    document.getElementById('dia-contenedor').innerHTML = html;
+}
+
+// Función para cambiar vista
+function cambiarVista(vista) {
+    vistaActual = vista;
+    
+    // Actualizar botones
+    document.querySelectorAll('.boton-vista').forEach(btn => btn.classList.remove('activo'));
+    event.target.classList.add('activo');
+    
+    // Ocultar todas las vistas
+    document.getElementById('vista-mes').style.display = 'none';
+    document.getElementById('vista-semana').style.display = 'none';
+    document.getElementById('vista-dia').style.display = 'none';
+    
+    // Mostrar vista seleccionada
+    if (vista === 'mes') {
+        document.getElementById('vista-mes').style.display = 'block';
+        generarCalendarioMes();
+    } else if (vista === 'semana') {
+        document.getElementById('vista-semana').style.display = 'block';
+        generarVistaSemana();
+    } else if (vista === 'dia') {
+        document.getElementById('vista-dia').style.display = 'block';
+        generarVistaDia();
+    }
+}
+
+// Función para seleccionar un día
+function seleccionarDia(fecha) {
+    console.log('Día seleccionado:', fecha);
+}
+
+// Función para filtrar citas
+function filtrarCitas(termino) {
+    console.log('Filtrando citas:', termino);
+}
+
+// Función para ver detalle de cita
+function verDetalleCita(id) {
+    const cita = citas.find(c => c.id === id);
+    if (cita) {
+        const horaFormateada = cita.hora ? cita.hora.substring(0, 5) : '00:00';
+        alert(`Cita: ${cita.nombrePaciente}\nMotivo: ${cita.motivoConsulta || 'Sin motivo especificado'}\nHora: ${horaFormateada}\nDoctor: ${cita.nombreDoctor}\nTipo: ${cita.tipoCita}`);
+    }
+}
+</script>
+</body>
+</html>
